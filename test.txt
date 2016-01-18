@@ -1,0 +1,5 @@
+{ propertytype: 
+   [ { count: 4293,
+       msg: 'propertytype not found',
+       value: 'not provided' } ],
+  city: [ { count: 1626, msg: 'city is not valid', value: 'N/A' } ] }

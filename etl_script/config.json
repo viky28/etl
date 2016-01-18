@@ -1,0 +1,140 @@
+
+{
+    "error_log": "./logs/errors.log",
+    "db": {
+        "sessionDb": "mongodb://localhost:27017/sessionDb"
+    },
+    "validation": {
+        "schemas": [
+            "job-schema.json",
+            "automobiles-schema.json"
+        ]
+    },
+    "ui": {
+        "sessionTimeoutInSeconds" : 30,
+        "maxSeeks" : 3
+    },
+    "title_template": "<commodityType>;<cropType>",
+    "apiconfig": {
+        "listing": {
+            "url": "http://localhost:8080/listings",
+            "lookupurl":"http://localhost:8080/ui2/lookups.json",
+            "db": "mongodb://localhost:27017/voda",
+            "deleteAll" : "http://localhost:8080/listings/user"
+        },
+        "lookup": {
+            "url": "http://localhost:8080/"
+        },
+        "incontroller": {
+            "url": "http://localhost:8080/incontroller/listing",
+            "deleteUserUrl": "http://localhost:8080/incontroller/deleteusercategory",
+            "deleteUrl": "http://localhost:8080/incontroller/deletelisting",
+            "updateUrl": "http://localhost:8080/incontroller/updatelisting",
+            "db": "mongodb://localhost:27017/voda",
+            "lang":["en", "sw"],
+            "status": ["in-queue", "indexed", "matched"],
+            "collection": "inqueue",
+            "expiryPeriod": 30,
+            "usersService": "http://localhost:8080/users/addlisting",
+            "getusers": "http://localhost:8080/users/getwithuserid",
+            "index_base_url": "http://localhost:8983/solr/marketplace/",
+            "index_push_url": "update/json?commit=true",
+            "index_delete_complete": "update?stream.body=%3Cdelete%3E%3Cquery%3E*:*%3C/query%3E%3C/delete%3E&commit=true",
+            "max_searches": "200",
+            "min_match_score":0.06,
+            "default_page_size":10,
+            "pricing_url": "http://localhost:8080/pricing/getpricing",
+            "index_search_url": "select/?",
+            "index_url_params": "indent=on&wt=json&defType=edismax&sort=postdate+desc%2Cscore+desc&rows=",
+            "index_url_params_top5": "wt=json&defType=edismax&sort=category+asc,postdate+desc&group=true&group.field=category&group.limit=5&rows=",
+            "deleteUser": "http://localhost:8080/users/delete",
+            "unsubUser": "http://localhost:8080/users/unsubscribe",
+            "unsubscribe": "http://localhost:8080/incontroller/unsubuser",
+            "cron_break_seconds": "5",
+            "listingvalidity":{"cars":90, "jobs":60, "property":180, "mobiles":60}
+        },
+        "alerts": {
+            "db": "mongodb://localhost:27017/voda",
+            "collection": "inqueue",
+            "max_searches": "200",
+            "billing_url": "http://localhost:8080/billing/dobilling",
+            "retry_billing_millis": "300000",
+            "retry_interval_no_alerts_millis": "3600000",
+            "wait_for_alerts_time_millis":"7200000",
+            "alertscollection": "alertsqueue",
+            "inqueuecollection": "inqueue",
+            "sendalert":"http://localhost:8080/alerts/sendalertbycode",
+            "sendalertsimple":"http://localhost:8080/alerts/sendalert",
+            "error_log": "./logs/incontroller-errors.log",
+            "sms_gateway":"smpp",
+            "send_sms":"false"
+        },
+        "users": {
+            "url": "http://localhost:8080/users/getwithuserid",
+            "updateuser": "http://localhost:8080/users/update",
+            "reguser": "http://localhost:8080/users/registeruserapp",
+            "db": "mongodb://localhost:27017/voda",
+            "userSchema": "http://localhost:8080/config/userschema.json"
+        },
+        "billing": {
+            "billingcallback": "http://localhost:8080/alerts/billingcallback",
+            "delay_simulated": "1500"
+        },
+        "ui2": {
+            "getusers": "http://localhost:8080/users/getwithuserid",
+            "postlisting": "http://localhost:8080/incontroller/listing",
+            "updateuser": "http://localhost:8080/users/update",
+            "getlisting": "http://localhost:8080/incontroller/getlisting",
+            "updatedeletedlisting": "http://localhost:8080/incontroller/postdeletefeedback",
+            "unsubscribe": "http://localhost:8080/incontroller/unsubuser",
+            "delay_simulated": "1500",
+            "db": "mongodb://localhost:27017/voda",
+            "mmcodes":{
+                "149#1":"cars",
+                "149#2":"mobiles",
+                "149#3":"property"
+            }
+        },
+        "common":{
+            "resourcepath":"/home/fortek/workspace/project/marketplace/dev/common/stubs",
+            "enrichedheader":"msisdn",
+            "secretkey":"OU812",
+            "skipuris":["/users/registeruserapp", "/users/verify", "/users/smsverify", "/users/ussdregister"],
+            "skipindex":["transactiontype", "channel", "msisdn", "userid", "vetting", "startDate", "expiryDate", "lastUpdate", "extid", "title", "postdate", "startdate", "next_billing_date", "images", "id"],
+            "seekwords":["brand","warranty","required","wanted","want","looking","required","need","willing","buy"],
+            "ignorewords":["i","me","you","your","it","good","very","condition","excellent","old","new","used"]
+        },
+        "media":{
+            "imagespath":"/home/fortek/workspace/project/marketplace/dev/images",
+            "imagesurl":"http://localhost/images"
+        },
+        "chat":{
+            "getgcmkey":"http://localhost:8080/users/getgcmkey",
+            "sendpull":"http://localhost:8080/chat/sendmessagegcmid",
+            "projectid":"653180527084@gcm.googleapis.com",
+            "server_key":"AIzaSyBiJAjkHsf7CXLMxQF_P3Js_dsFgrJvqH4"
+
+        },
+        "smpp":{
+            "smpp": {
+                "mode":         "transceiver",
+                "host":         "127.0.0.1",
+                "port":         2775,
+                "system_id":    "indi",
+                "password":     "indi",
+                "system_type":  "smpp",
+                "addr_ton":     0,
+                "addr_npi":     1,
+                "addr_range":   "",
+                "timeout":      30,
+                "client_keepalive":  false,
+                "client_reconnect_interval": 2500,
+                "strict":       1
+            },
+            "debug":    true,
+            "sender_id":"marketplace"
+        }
+
+    }
+}
+	

@@ -1,0 +1,148 @@
+Express server listening on port 10000
+{ city: [ { count: 692, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 2071, msg: 'area not found', value: undefined },
+     { count: 2071, msg: 'area dependency not met', value: undefined } ],
+  price: [ { count: 1200, msg: 'price not found', value: undefined } ],
+  make: [ { count: 570, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 596, msg: 'model is not valid', value: 'N/A' },
+     { count: 596, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 1385, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 4143, msg: 'area not found', value: undefined },
+     { count: 4143, msg: 'area dependency not met', value: undefined } ],
+  price: [ { count: 2401, msg: 'price not found', value: undefined } ],
+  make: [ { count: 1141, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 1193, msg: 'model is not valid', value: 'N/A' },
+     { count: 1193, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 2078, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 6215, msg: 'area not found', value: undefined },
+     { count: 6215, msg: 'area dependency not met', value: undefined } ],
+  price: [ { count: 3602, msg: 'price not found', value: undefined } ],
+  make: [ { count: 1712, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 1790, msg: 'model is not valid', value: 'N/A' },
+     { count: 1790, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 2771, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 8287, msg: 'area not found', value: undefined },
+     { count: 8287, msg: 'area dependency not met', value: undefined } ],
+  price: [ { count: 4803, msg: 'price not found', value: undefined } ],
+  make: [ { count: 2283, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 2387, msg: 'model is not valid', value: 'N/A' },
+     { count: 2387, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 3464, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 10359, msg: 'area not found', value: undefined },
+     { count: 10359,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 6004, msg: 'price not found', value: undefined } ],
+  make: [ { count: 2854, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 2984, msg: 'model is not valid', value: 'N/A' },
+     { count: 2984, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 4157, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 12431, msg: 'area not found', value: undefined },
+     { count: 12431,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 7205, msg: 'price not found', value: undefined } ],
+  make: [ { count: 3425, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 3581, msg: 'model is not valid', value: 'N/A' },
+     { count: 3581, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 4850, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 14503, msg: 'area not found', value: undefined },
+     { count: 14503,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 8406, msg: 'price not found', value: undefined } ],
+  make: [ { count: 3996, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 4178, msg: 'model is not valid', value: 'N/A' },
+     { count: 4178, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 5543, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 16575, msg: 'area not found', value: undefined },
+     { count: 16575,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 9607, msg: 'price not found', value: undefined } ],
+  make: [ { count: 4567, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 4775, msg: 'model is not valid', value: 'N/A' },
+     { count: 4775, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 6236, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 18647, msg: 'area not found', value: undefined },
+     { count: 18647,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 10808, msg: 'price not found', value: undefined } ],
+  make: [ { count: 5138, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 5372, msg: 'model is not valid', value: 'N/A' },
+     { count: 5372, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 6929, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 20719, msg: 'area not found', value: undefined },
+     { count: 20719,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 12009, msg: 'price not found', value: undefined } ],
+  make: [ { count: 5709, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 5969, msg: 'model is not valid', value: 'N/A' },
+     { count: 5969, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 7622, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 22791, msg: 'area not found', value: undefined },
+     { count: 22791,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 13210, msg: 'price not found', value: undefined } ],
+  make: [ { count: 6280, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 6566, msg: 'model is not valid', value: 'N/A' },
+     { count: 6566, msg: 'model dependency not met', value: 'N/A' } ] }
+null
+{ city: [ { count: 8315, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 24863, msg: 'area not found', value: undefined },
+     { count: 24863,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 14411, msg: 'price not found', value: undefined } ],
+  make: [ { count: 6851, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 7163, msg: 'model is not valid', value: 'N/A' },
+     { count: 7163, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 9008, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 26935, msg: 'area not found', value: undefined },
+     { count: 26935,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 15612, msg: 'price not found', value: undefined } ],
+  make: [ { count: 7422, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 7760, msg: 'model is not valid', value: 'N/A' },
+     { count: 7760, msg: 'model dependency not met', value: 'N/A' } ] }
+{ city: [ { count: 9701, msg: 'city is not valid', value: 'N/A' } ],
+  area: 
+   [ { count: 29007, msg: 'area not found', value: undefined },
+     { count: 29007,
+       msg: 'area dependency not met',
+       value: undefined } ],
+  price: [ { count: 16813, msg: 'price not found', value: undefined } ],
+  make: [ { count: 7993, msg: 'make is not valid', value: 'Other Brand' } ],
+  model: 
+   [ { count: 8357, msg: 'model is not valid', value: 'N/A' },
+     { count: 8357, msg: 'model dependency not met', value: 'N/A' } ] }

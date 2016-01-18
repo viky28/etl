@@ -1,0 +1,14 @@
+{
+	"users":[
+		{
+			"userid":"viky",
+			"password":"1234",
+			"type":"cp"
+		},
+		{
+			"userid":"indi",
+			"password":"222",
+			"type":"msp"
+		}
+	]
+}

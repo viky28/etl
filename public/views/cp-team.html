@@ -1,0 +1,49 @@
+<div class="container">
+    <span class="link span-sty" onclick="showPanel('et-left-panel')">Show Config</span>
+    <div id="treeview" class="et-left-panel"></div>
+    
+</div>
+
+<div class="container">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <div class="panel-body">
+          <h1>Welcome cp</h1>
+          
+          
+          <form action="/uploadFile" method="post" enctype="multipart/form-data" onsubmit="return ValidateFile(this);">
+            <div class="form-inline">
+              <span class="error_msg"></span>
+              <table>
+                <tr>
+                  <td>
+                    <select id="channel" name="channel">
+                      <option value="ussd">ussd</option>
+                      <option value="wap">wap</option>
+                      <option value="app">app</option>
+                    </select>
+                  </td>
+                  <td>
+                    <select id="catagory" name="cat"></select>
+                  </td>
+                </tr>
+              </table>
+          <h4>Select files from your computer</h4>
+              <div class="form-group">
+                <input type="file" name="uploadFile" id="js-upload-files" multiple onclick="resetAll()">
+              </div>
+              <button type="submit" class="btn btn-sm btn-primary" id="js-upload-submit">Upload files</button>
+            </div>
+          </form>
+              </br></br>
+              <!-- Upload Finished -->
+          <div class="js-upload-finished">
+            <h3>Processed files</h3>
+            <div id="list">
+              
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> 
