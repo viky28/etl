@@ -183,7 +183,7 @@ app.post('/showReport',function(req,res){
 
 
 app.delete('/deleteRecord',function(req,res){
-		console.log(saveFile)
+		
 		database.deleteRecords(req.query.id,function(err,result){
 			
 			res.send('success');
