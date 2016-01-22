@@ -11,22 +11,23 @@ function showListing(id){
 		data:JSON.stringify({id:id}),
 		success : function(data){
 			 //console.log(data,typeof data)//data = JSON.parse(data);
-			 	var list="<table class='table'>";
-			 	list+="<thead><tr><th>Field</th><th>Value</th><th>ErrorMsg</th><th>ErrorCount</th></tr></thead>"
+			 	var list="<table class='table table-bordered'>";
+			 	list+="<thead><tr><th>Field</th><th>Value</th><th>ErrorMsg</th><th>ErrorCount</th></tr></thead><tbody>"
 				for(item in data){
-					console.log(typeof data[item]);
+					//console.log(data[item]);
 					
 					if (typeof data[item] == "object") {
-						list+="<tbody><tr class='success'><td>"+item+"</td>";
+						list+="<tr class='success'><td rowspan="+(data[item].length+1)+">"+item+"</td></tr>";
 						$.each(data[item],function(key,value){
-							list+="<td>"+(value.value||"not avaible")+"</td><td>"+value.msg+"</td><td>"+value.count+","+"</td>";
+							list+="<tr class='warning'><td>"+(value.value||"not avaible")+"</td><td>"+value.msg+"</td><td>"+value.count+"</td></tr>";
 						
 						});	
-						list+="</tr></tbody>";
+						
 					};
 					
 					
 				}
+				list+="</tbody>";
 				
 				list+="</table>";
 				$('#showDetails').html(list);

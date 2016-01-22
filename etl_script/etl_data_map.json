@@ -161,7 +161,7 @@
   },
   "bikes": {
     "make": {
-     "Bajaj":"bajaj",
+      "Bajaj":"bajaj",
       "Fekon":"fekon",
       "Honda":"honda",
       "SanLg":"sanlg",
@@ -178,9 +178,14 @@
       "Suzuki":"suzuki",
       "Toyo":"toyo",
       "TVS":"tvs",
-      "Yamaha":"yamaha"
+      "Yamaha":"yamaha",
+      "King Lion":"kinglion",
+      "Sports motorbikes":"sportsmotorbikes"
     },
     "model": {
+      "FK 150":"FK150",
+      "FK 1":"fk1",
+      "KL 150":"KL150",
       "SG110" : "sg110",
       "KE1" : "ke1",
       "GF 60" : "gf60",
@@ -189,6 +194,9 @@
       "FK 1" : "fk1",
       "Dazz" : "dazzler",
       "Boxe" : "boxer",
+      "Boxer 150":"boxer",
+      "Boxer 100":"boxer",
+      "Click 125":"click",
       "Ot" : "ot",
       "Fazer" : "fazer",
       "Tener" : "tenere",

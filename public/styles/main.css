@@ -208,9 +208,10 @@ button, select {
     font-family: monospace;
 }
 .span-sty{
-    position: fixed;
+    position: absolute;
     top: 68px;
     text-decoration: underline;
+    margin-left: -96px;
 }
 
 a:active {
@@ -288,7 +289,7 @@ a{
 #showDetails{
     length:auto;
     overflow-y: scroll;
-    height:300px;
+    height:500px;
     font-size: 13px;
 }
 .repo{

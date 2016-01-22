@@ -1,5 +1,24 @@
-{ propertytype: 
-   [ { count: 4293,
-       msg: 'propertytype not found',
-       value: 'not provided' } ],
-  city: [ { count: 1626, msg: 'city is not valid', value: 'N/A' } ] }
+{ model: 
+   [ { count: 329, msg: 'model is not valid', value: 'N/A' },
+     { count: 91, msg: 'model is not valid', value: 'AX 100' },
+     { count: 529, msg: 'model is not valid', value: 'Boxer 150' },
+     { count: 38, msg: 'model is not valid', value: 'Click 125' },
+     { count: 159, msg: 'model is not valid', value: 'Boxer 100' },
+     { count: 149, msg: 'model is not valid', value: 'KE14 150 CC' },
+     { count: 352, msg: 'model is not valid', value: 'FK 125' },
+     { count: 144, msg: 'model is not valid', value: 'KE7 125 CC' },
+     { count: 138, msg: 'model is not valid', value: 'NT 650' },
+     { count: 101, msg: 'model is not valid', value: 'GF 600' },
+     { count: 47, msg: 'model is not valid', value: 'KE15 100 CC' },
+     { count: 54, msg: 'model is not valid', value: 'KE16 100 CC' },
+     { count: 125, msg: 'model is not valid', value: 'SL 125' },
+     { count: 124, msg: 'model is not valid', value: 'Ace 125' },
+     { count: 181, msg: 'model is not valid', value: 'KS7 150 CC' },
+     { count: 83, msg: 'model is not valid', value: 'KE6 200 CC' },
+     { count: 32, msg: 'model is not valid', value: 'KL 125' },
+     { count: 103, msg: 'model is not valid', value: 'SL 150' },
+     { count: 30, msg: 'model is not valid', value: 'KE8 125 CC' } ],
+  city: 
+   [ { count: 25, msg: 'city is not valid', value: 'Other location' },
+     { count: 1925, msg: 'city is not valid', value: 'N/A' },
+     { count: 143, msg: 'city is not valid', value: 'Eneo wowote' } ] }

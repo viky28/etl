@@ -183,11 +183,10 @@ app.post('/showReport',function(req,res){
 
 
 app.delete('/deleteRecord',function(req,res){
+	database.deleteRecords(req.query.id,function(err,result){
+		res.send('success');
+	});
 		
-		database.deleteRecords(req.query.id,function(err,result){
-			
-			res.send('success');
-		});
 });
 
 app.put('/updateRecord',function(req,res){
@@ -223,14 +222,14 @@ function checkListing(res,data) {
 				error[val.field] = new Array();
 			};
 
-			var fl = _.where(error[val.field],{msg:val.errormessage});
+			var fl = _.where(error[val.field],{msg:val.errormessage,"value":val.value});
 			if (fl.length == 0) {
-				error[val.field].push({count:0,msg:val.errormessage,"value":val.value || "not provided"});	
+				error[val.field].push({count:1,msg:val.errormessage,"value":val.value || "not provided"});	
 			}else{
 				//console.log("\n");
 				_.each(error[val.field],function(item){
 					//console.log(item.msg,fl);
-					if (item.msg === fl[0].msg) {
+					if (item.msg === fl[0].msg && item.value === fl[0].value) {
 						item.count++;
 					};
 				});

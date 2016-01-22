@@ -758,6 +758,8 @@
 
     "bikebrand":[
         {"id":"bajaj", "name":{"en":"Bajaj", "sw":"Bajaj"}},
+        {"id":"sportsmotorbikes", "name":{"en":"Sports motorbikes", "sw":"Sports motorbikes"}},
+        {"id":"kinglion", "name":{"en":"King Lion", "sw":"King Lion"}},
         {"id":"fekon", "name":{"en":"Fekon", "sw":"Fekon"}},
         {"id":"toyo", "name":{"en":"Toyo", "sw":"Toyo"}},
         {"id":"honda", "name":{"en":"Honda", "sw":"Honda"}},
@@ -820,6 +822,8 @@
         {"id":"sg110","parent":"skygo","name":{"en":"SG110","sw":"SG110"}},
         {"id":"sg125","parent":"skygo","name":{"en":"SG125","sw":"SG125"}},
         {"id":"sg150","parent":"skygo","name":{"en":"SG150","sw":"SG150"}},
+        {"id": "KL150", "parent":"kinglion", "name":{ "en":"KL 150", "sw":"KL 150" } },
+        {"id": "FK150", "parent":"sportsmotorbikes", "name":{ "en":"FK 150", "sw":"FK 150" } },
         {"id": "other", "parent":"skygo", "name":{ "en":"Other", "sw":"Other" } },
         {"id": "any", "parent":"skygo", "name":{ "en":"Any", "sw":"Any" }, "showonly":"seek"}
     ],

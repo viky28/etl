@@ -96,7 +96,6 @@ function deleteRecord(id){
 		contentType: "application/json; charset=utf-8",
 		type : 'DELETE',
 		success : function(result){
-			
 			location.reload();
 		},
 		error : function(){
