@@ -7,22 +7,23 @@ var cookieParser = require('cookie-parser');
 var _ = require("underscore");
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var mime = require("mime");
+
 var json2xls = require('json2xls');
 var done = false;
 
-
+var database = require("./usersDatabase");
 var etl_data_map = require("./etl_script/etl_data_map");
 var etl_config = require("./etl_script/etl_config.json");
 var lookups=require("./etl_script/datalookup.json");
-var credential_data = require("./public/loginDetail.json");
+
 var app = express();
-var database = require("./usersDatabase");
+
 var auth = require("./auth");
-var catdatadetail=require('./etl_script/catdatadetail.json');
-var datalookup=require('./etl_script/datalookup.json');
+
 var etl_helper=require("./etl_script/etl_helper");
 var listing=require('./etl_script/listing.json');
+
+var app_helper = require("./helper");
 
 
 app.use(json2xls.middleware);
@@ -34,72 +35,56 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(expressSession({secret:'somesecrettokenhere'}));
-var uploadFilePath = "/public/uploads"
+var uploadFilePath = "/public/uploads";
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
   	cb(null,'.'+uploadFilePath)
   },
   filename: function (req, file, cb) {
-  	saveFile(req,file,cb,function(name){
+  	app_helper.saveFile(req,file,cb,function(name){
   		cb(null, name)
   	});
   }
 });
 
-function saveFile(req,file,cb,next){
-	var fileextention = path.extname(file.originalname);
-	var tmp = file.originalname.split(fileextention)[0];
-	var date = new Date();
-	var dt = (date.getDate()-1)+"-"+(date.getMonth()+1)+"-"+date.getFullYear();
-	var time = date.getHours() + ":" +date.getMinutes() + ":" +date.getSeconds();
-  	var filename = tmp+ '-' +"@"+dt+fileextention;
-  	var channel=req.body.channel;
-  	var catagory=req.body.cat;
 
-	var data = {type:req.session.user.type,file:filename,path:uploadFilePath,uploaded_date:dt,time:time,user:req.session.user.userid,channel:channel,catagory:catagory,status:"pending"};
-  	database.insertData(data,function(err,result){
-  		console.log(err);
-  	});
-
-  	next(filename);
-
-}
 app.use(multer({ storage:storage}).single("uploadFile"));
 
 app.use(express.static(__dirname + '/public'));
 
+
 app.post("/user/authenticate",function(req,res){
 
-	var getData=req.body;
-	var filter_data=_.findWhere(credential_data.users,{userid:getData.userid,password:getData.password,type:getData.type});
-	if (filter_data) {
-		req.session.user = {
-			userid: req.body.userid,
-			type: req.body.type
-		}
-		res.send(JSON.stringify({status:"success",type:filter_data.type}));
-
-	} else{
-		res.send(JSON.stringify({status:"error",msg:"Authentication Fail"}));
-	};
-	
+	var user_data=req.body;
+	app_helper.getUser(user_data,function(result){
+		if (result) {
+			req.session.user = {
+				userid: user_data.userid,
+				type: user_data.type
+			}
+			res.json({status:"success",type:user_data.type});
+		} else{
+			res.json({status:"error",msg:"Authentication Fail"});
+		};
+	});
 });
+
 app.post("/uploadFile",function(req,res){
 	res.redirect("/");
 });
 
 app.get("/users/details",function(req,res){
 	if(req.session.user)
-		res.send(JSON.stringify(req.session.user));
+		res.json({status:"success",type:req.session.user.type});
 	else{
-		res.send(JSON.stringify({status:"error",msg:"Unaurthorized user"}));
+		res.json({status:"error",msg:"Unaurthorized user"});
 	}
 });
 
 app.post("/users/data",function(req,res){
 	var postjson = {type:req.body.type};
-	database.getData(postjson,function(err,data){
-		res.send(data);
+	app_helper.getUploadFile(postjson,function(result){
+		res.json(result);
 	});
 });
 
@@ -109,20 +94,17 @@ app.get('/logout', function(req, res){
 });
 
 app.get('/downloadReport',function(req,res) {
-	_.each(error,function(item,key){
-		error[key] = JSON.stringify(item);
+
+	app_helper.getRepot(error,function(result){
+		res.xls('Report.xlsx', result);	
 	});
-	res.xls('Report.xlsx', error);
+	
 });
 
 app.get('/download', function(req, res){
-	database.getFile(req.query.file,function(err,result){
-		var file = __dirname + result.path+'/'+result.file;		
-		var filename = path.basename(file);
-		var mimetype = mime.lookup(file);
+	app_helper.downloadFile(req.query.file,function(filename,mimetype,file){
 		res.setHeader('Content-disposition', 'attachment; filename=' + filename);
   		res.setHeader('Content-type', mimetype);
-
   		var filestream = fs.createReadStream(file);
   		filestream.pipe(res);
 	});
@@ -130,75 +112,54 @@ app.get('/download', function(req, res){
 
 app.get('/downloadConfig',function(req,res){
 	var file = __dirname + '/etl_script/etl_config.json';		
-		var filename = path.basename(file);
-		var mimetype = mime.lookup(file);
-		res.setHeader('Content-disposition', 'attachment; filename=' + filename);
-  		res.setHeader('Content-type', mimetype);
+	var filename = path.basename(file);
+	var mimetype = mime.lookup(file);
+	res.setHeader('Content-disposition', 'attachment; filename=' + filename);
+	res.setHeader('Content-type', mimetype);
 
-  		var filestream = fs.createReadStream(file);
-  		filestream.pipe(res);
+	var filestream = fs.createReadStream(file);
+	filestream.pipe(res);
 });
-app.get('/treeview', function(req,res){
-	var data = [];
-	var dtmp;
-	_.each(catdatadetail,function(item,key){
-		dtmp={};
-		dtmp["text"] = key;
-		var tmp = [];
-			_.each(item,function(value,key1){
-				if(value.mandatory==="true"){
-					if (value.type.indexOf("$")> -1 || value.type.indexOf("#") > -1) {
-						if(value.type.indexOf("$")> -1){
-							tmp.push({"text":value.field+"(numeric)"});
-						}else{
-							tmp.push({"text":value.field,"children":getdataLookUp(datalookup[value.type.substring(1)])});
-						}
-					} else{
-						tmp.push({"text":value.field});
-					};
-				}
-			});
 
-			dtmp["children"] = tmp;
-		data.push(dtmp);	
+
+app.get('/treeview', function(req,res){
+
+	app_helper.getTreeData(function(result){
+		res.json(result);
 	});
-	res.json(data);
 });
 
 app.post('/showReport',function(req,res){
-	
-	 database.getFile(req.body.id ,function(err,result){
-		if (!result) {
-	
-			res.send(result);	
-		};
-		
-		var file = __dirname + result.path+'/'+result.file;		
-		etl_helper.start_process(result.catagory,file,true,function(response){
-			checkListing(res,response);
-		});
-		
+	app_helper.generateReport(req.body.id,function(result){
+		res.json(result);
 	});
 });
 
-
 app.delete('/deleteRecord',function(req,res){
+
 	database.deleteRecords(req.query.id,function(err,result){
 		res.send('success');
 	});
 		
+app_helper.deleteFile(req.query.id,function(){
+		res.send('success');	
+	});
+	
+
 });
 
 app.put('/updateRecord',function(req,res){
-	database.updateRecord(req.query.id,function(err,result){
-		res.send('success');
-	});
+	app_helper.updateRecord(req.query.id,function(){
+		res.send("success");
+	})
 });	
 
+app.get("*",function(req,res){
+	res.redirect('/');
+});
 http.createServer(app).listen(10000, function(){
 	console.log('Express server listening on port ' + 10000);
 });
-
 
 function getdataLookUp(data){
 	var list = [];
@@ -241,3 +202,4 @@ function checkListing(res,data) {
 	error["errorCount"] = data["errorCount"];
 	res.json(error);
 }
+

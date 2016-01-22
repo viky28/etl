@@ -210,8 +210,9 @@ button, select {
 .span-sty{
     position: absolute;
     top: 68px;
+    left: 11px;
     text-decoration: underline;
-    margin-left: -96px;
+    margin-left: 0px;
 }
 
 a:active {
@@ -231,9 +232,7 @@ a{
     color: #B22222;
     font-family: initial;
 }
-#report{
-    background-color: #666;
-}
+
 .dialog{
     overflow: hidden;
     background-color: rgba(0, 0, 0, 0.7);
@@ -286,25 +285,45 @@ a{
     margin-left: 600px;
     background-color: #31708f;
 }
+<<<<<<< HEAD
 #showDetails{
     length:auto;
     overflow-y: scroll;
     height:500px;
     font-size: 13px;
 }
+=======
+
+>>>>>>> a9bb44aab28a55b25e5344441a72dcb34ca04f48
 .repo{
-    background-color: white;
-    margin-left: 206px;
-    margin-right: 206px;
-    font-size: 20px;
-    cursor: pointer;
+    background-color: rgba(127, 122, 122, 0.55);
+    font-size: 18px;
+    width: 50%;
     font-family: monospace;
-    font-variant: small-caps;
     font-weight: bolder;
+    text-align: center;
+    margin: auto;
 }
 .config{
     font-size: 18px;
     font-variant: small-caps;
     font-family: monospace;
     font-weight: bolder;
+}
+.upload-link{
+    float: right;
+    margin-top: -84px;
+    color: #369;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.report{
+        background-color: rgba(152, 150, 150, 0.22);
+    border-radius: 5px;
+}
+.count-report{
+    color: #369;
+    font-size: 18px;
+    font-weight: bold;
 }

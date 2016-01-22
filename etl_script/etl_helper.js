@@ -21,7 +21,6 @@ var helper = {};
 var ERROR_LOG = {};
 var type_validation = {};
 
-
 helper.start_process=function(type, file_name,checkOnly,next){
   ERROR_LOG = {};
   ERROR_LOG["errorCount"] = 0;

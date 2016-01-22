@@ -1,81 +1,49 @@
-var userDetails = {};
-$.ajax({
-	url : '/users/details',
-	dataType : 'text',
-	contentType: "application/json; charset=utf-8",
-	type : 'GET',
-	success : function(data){
-		
-		data = JSON.parse(data);
-			
-			if (data.status == "error") {
-					$( "#content" ).load( "/views/login.html" );
-			} else{
-					$("#logout").html("<a href='/logout' class='btn btn-default'>LogOut</a>");
-				if(data.type==='cp'){
-					$("#content").load("/views/cp-team.html",function(){
-						loadUploadedData("list","cp");
-						showTreeView();
-						getCatagory();
-					});
-					
-				} else if(data.type==='msp') {
-					$("#content").load("/views/msp-team.html",function(){
-						loadUploadedData("wrapper","cp");
-					});
-					
-				}
-			};
-	},
-
-	error : function(){
-		console.log('problem in get request');
-	}
-});
-
 function resetAll(){
 	$("#error_msg").html("");
 }
 
 function ValidateFile(that){
 	var val = $('#js-upload-files').val();
-		if (val.indexOf(".csv") != -1) {
+		if (val.indexOf(".zip") != -1) {
 			return true;
 		};
-			$("#error_msg").html("Only Csv File Accepted");
-			return false;
+		$("#errormsg").html("<span>Only Zip File Accepted</span>");
+		return false;
 }
 
 function loadUploadedData(id,type){
 	$.ajax({
 		url : '/users/data',
-		dataType : 'text',
+		dataType : 'json',
 		contentType: "application/json; charset=utf-8",
 		type : 'POST',
 		data:JSON.stringify({type:type}),
 		success : function(data){
-			data = JSON.parse(data);
-			var list = "<ul class='list-group'>";
-				var alist = ["type","_id","path","user","channel","catagory"];
-				var blist = ["type","_id","path","user","status","catagory"];
-					for(var i=0;i<data.length;i++){
-						list+="<li class='list-group-item'>";
-							$.each(data[i],function(key,value){
-								if(alist.indexOf(key) == -1 && id==='list'){
-									list+="<span id='keys'>"+key+":-"+"</span><span>"+value+","+"</span>&nbsp;";
-								} else if(blist.indexOf(key)== -1 && id==='wrapper'){
-									list+="<span id='keys'>"+key+":-"+"</span><span>"+value+","+"</span>&nbsp;";
-								}
-							});
-							if(id==='wrapper'){
-								list+="|&nbsp;<span id='spa' onclick='changeStatus(\""+data[i]["_id"]+"\")'>Report</span></li>";
-							}else if(id==='list'){
-								list+="|&nbsp;<a href='#' onclick='deleteRecord(\""+data[i]["_id"]+"\")'>Delete</a></li>";
-							}
-					};
-			list+="</ul>";
-			$("#"+id).html(list);
+			var list = "";
+			var alist = ["type","_id","path","user","channel","catagory"];
+			var blist = ["type","_id","path","user","status","catagory"];
+			
+			for(var i=0;i<data.length;i++){
+				list+="<li class='list-group-item'>";
+				
+				$.each(data[i],function(key,value){
+					var dat = new Date(value) == "Invalid Date" ? value : new Date(value);
+					if(alist.indexOf(key) == -1 && id==='list'){
+						list+="<span id='keys'>"+key+":-"+"</span><span>"+dat+","+"</span>&nbsp;";
+					} else if(blist.indexOf(key)== -1 && id==='wrapper'){
+						list+="<span id='keys'>"+key+":-"+"</span><span>"+dat+","+"</span>&nbsp;";
+					}
+				});
+				
+				if(id==='wrapper'){
+					list+="|&nbsp;<a href='/#/report?id="+data[i]["_id"]+"'>Report</a></li>";
+				}else if(id==='list'){
+					list+="|&nbsp;<a href='#' onclick='deleteRecord(\""+data[i]["_id"]+"\")'>Delete</a></li>";
+				}
+			};
 
+			list = list == ""?"<span>Record not found</span>":"<ul class='list-group'>"+list+"</ul>";
+			$("#"+id).html(list);
 		},
 		error : function(){
 			console.log('problem in get request');
@@ -97,6 +65,8 @@ function deleteRecord(id){
 		type : 'DELETE',
 		success : function(result){
 			location.reload();
+
+			changeUrl("/cp-profile");
 		},
 		error : function(){
 			console.log("error");
@@ -122,22 +92,32 @@ function changeStatus(id){
 	});
 }
 
-function getCatagory(){
-	$.ajax({
-		url:'/treeview',
-		contentType: "application/json; charset=utf-8",
-		datatype:'JSON',
-		type:'GET',
-		success : function(data){
-			var cat = "";
-			for (var i = 0; i < data.length; i++) {
-				cat+="<option value='"+data[i].text+"'>"+data[i].text+"</option>";
-			};
-			$("#catagory").html(cat);
 
-		},
-		error : function(){
+function loadUserProfile(data,next){
+	var app = etlApp;
+	console.log(data);
+	if (data.status == "success") {
+		app.user.type = data.type;
+		app.auth = true;
+		app.errorMessage = "SuccessFully Login";
+		var type = data.type == "cp" ? "cp-profile":"msp-team";
+		$("#logout").html("<a href='/logout' class='btn btn-default'>LogOut</a>");
+		changeUrl("/"+type);
+	}else{
+		app.auth = false;
+		app.errorMessage = "Authentication Fail";
+		if(next) next();
+	};
+}
 
-		}
+//change url 
+function changeUrl(url){
+	location.hash = url;
+}
+//load page
+function loadPage(page,next){
+	$("#content").load(page,function(){
+		if (next)
+			next();
 	});
 }
