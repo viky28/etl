@@ -7,6 +7,7 @@ var readline = require('readline');
 var rest = require("restler");
 var Converter = require("csvtojson").Converter;
 var Sequence = require('sequence').Sequence;
+var request = require('request');
 
 var util = require('./util');
 var etl_config = require("./etl_config.json");
@@ -16,22 +17,22 @@ var catdetails = require("./catdatadetail.json");
 
 
 
+
 var helper = {};
 //error object that save in file, after last operation
 var ERROR_LOG = {};
 var type_validation = {};
 
-helper.start_process=function(type, file_name,checkOnly,next){
+helper.start_process=function(type,filePath ,file_name,channel,checkOnly,next){
   ERROR_LOG = {};
   ERROR_LOG["errorCount"] = 0;
   ERROR_LOG["successCount"] = 0;
-
     var sequence = Sequence.create();
      sequence
     .then(function(nextfunc){
       checkForLastRow(next);
       readCsvFile(file_name.trim(),type,checkOnly,function(data){
-        buildPostJson(data, type, "en",function(b_response, action){
+        buildPostJson(data, type, channel, "en",filePath,checkOnly,function(b_response, action){
           if (checkOnly) {
             ////console.log(b_response);
           } else{
@@ -71,13 +72,11 @@ function readCsvFile(file,type,flag,next) {
 
       if (flag) {
         row_count++;
-        //console.log(jsonObj);
-        //if(row_count>2)process.exit(0);
         next(jsonObj);
 
       } else{
         setTimeout(function(){
-            //if(row_count >1) process.exit(0);
+            //if(row_count >6) process.exit(0);
             row_count++;
             next(jsonObj);
           },delay_time);
@@ -93,7 +92,7 @@ function readCsvFile(file,type,flag,next) {
 /****************************************Build post json from csv data for posting***********
 ************************************/
 
-function buildPostJson(data, type,lang, next){
+function buildPostJson(data, type,channel,lang,file_path,flag,next){
   
   var postJson = {};
   var catdetail = catdetails[type];
@@ -106,12 +105,13 @@ function buildPostJson(data, type,lang, next){
 
 
     postJson["category"] = type;
+    postJson["channel"] = channel;
     //default config data
     _.each(etl_config["defult_config"],function(value, key){
        postJson[key] = value;
     });
     
-    var lang = etl_config["defult_config"]["lang"];
+    
     //console.log(data);
     _.each(data, function(value, key){
         try {
@@ -120,7 +120,15 @@ function buildPostJson(data, type,lang, next){
           if (typeof(value) === "object") {
             value = value['']
           };
-          
+
+          if (filter_key == "") {
+            if (key == "images" || key == "thumbnail") {
+              var key_type = getKeyType(key);
+              type_validation[key_type].validate(value,key,postJson);
+            }else{
+              postJson[key] = value+"";
+            }
+          };
           var key_type = getKeyType(filter_key);
           if (value && filter_key && etl_config["user_config"]["skip_field"].indexOf(key) === -1  && value != "") {
             var field = _.findWhere(catdetail, {field:filter_key});
@@ -144,6 +152,7 @@ function buildPostJson(data, type,lang, next){
                 postJson[filter_key] = value.toString();
               }
             }else{
+              //console.log("key_type",key_type,value,filter_key);
               if(key_type) {
                 type_validation[key_type].validate(value,filter_key,postJson);
               }else if(filter_key === "action"){
@@ -156,8 +165,7 @@ function buildPostJson(data, type,lang, next){
                 }
                 
               }else{
-                var tmp = etl_config["user_config"][filter_key]||'';
-                postJson[filter_key] = tmp+value;
+                postJson[filter_key] = value.toString();
               }
             }
         }
@@ -166,8 +174,10 @@ function buildPostJson(data, type,lang, next){
         
       }
     });
-    //
-   nextfunc();
+    insertTitileAndDesc(postJson,type,function(){
+      nextfunc();   
+    });
+   
   
  }).then(function(nextfunc){
    //validate the Json
@@ -183,6 +193,17 @@ function buildPostJson(data, type,lang, next){
         nextfunc();
       }  
   }).then(function(nextfunc){
+    if(flag){
+      nextfunc();
+    }else{
+      imageUpload(postJson,file_path,function(){
+        console.log(postJson);
+      nextfunc();
+      });
+    }
+    
+  })
+ .then(function(nextfunc){
     next(postJson,operation);
   });
 }
@@ -220,8 +241,7 @@ type_validation.array={
     return;
   },
   insertData:function(value, key, postJson){
-    var url = etl_config["user_config"][key] || '';
-    postJson[key].push(url+""+value);
+    postJson[key].push(value);
   }
 }
 type_validation.date={
@@ -546,4 +566,57 @@ function calDate(index, value, key, postJson){
     default:
       postJson[key]= isNaN(Date.parse(value))? new Date(Date.parse(value)) :new Date(Date.parse(value))
   }
+}
+
+function insertTitileAndDesc(postJson,type,next){
+  var miss = etl_config["missing_field"][type];
+
+  if(!postJson["title"]) {
+    postJson["title"] = ""
+    _.each(miss["title"],function(item){
+      postJson["title"] = postJson["title"] + postJson[item];
+    });
+  };
+
+  if(!postJson["desc"]) {
+    postJson["desc"] = ""
+    _.each(miss["desc"],function(item){
+      var tmp = postJson[item] == "N/A" ? "":postJson[item];
+      postJson["desc"] = postJson["desc"] + tmp;
+    });
+  };
+  next();
+}
+
+function imageUpload(postJson,path,next){
+    // console.log("postjson",postJson);
+    var tmp = [];
+    var thumbnil = null;
+    var imgUrl = path+"/image/";
+    _.each(postJson["images"],function(item,index){
+       var formData = {
+            my_file: fs.createReadStream(imgUrl+item)
+        };    
+        request.post({url:'http://54.229.146.161/media/upload', formData: formData}, function optionalCallback(err, httpResponse, body) {
+            if (err) {
+                console.error('upload failed:', err);
+            }
+            console.log('Upload successful!  Server responded with:', body);
+
+            if (body) {
+              body = JSON.parse(body);
+              tmp.push(body.url);
+              thumbnil = body.thumbnail;
+            };
+            if(postJson["images"].length-1==index){
+              postJson["images"] = tmp;
+              postJson["thumbnail"] = thumbnil;
+              next();          
+            }
+        });
+      //console.log(formData);
+    });
+    
+    
+
 }

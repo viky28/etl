@@ -12,10 +12,11 @@ function showListing(id){
 	$.ajax({
 		url : '/showReport',
 		type : 'POST',
-		dataType : 'JSON',
+		dataType : 'json',
 		contentType: "application/json; charset=utf-8",
 		data:JSON.stringify({id:id}),
 		success : function(data){
+			//console.log("tpe",typeof(data));
 			 //console.log(data,typeof data)//data = JSON.parse(data);
 			 	var list="<table class='table table-bordered'>";
 			 	list+="<thead><tr><th>Field</th><th>Value</th><th>ErrorMsg</th><th>ErrorCount</th></tr></thead><tbody>"
@@ -35,8 +36,17 @@ function showListing(id){
 				}
 				list+="</tbody></table>";
 				var count = "<span class='count-report'>Total : "+data["totalCount"]+"</span></br><span style='color:red' class='count-report'>Errors : "+data["errorCount"]+"</span>";
-				$('#showDetails').html(count+list);
-				
+				$('#showDetails').html(count+"</br>"+list);
+				var repo_list="<h1>Data Report</h1>"+
+							"<a href='/downloadReport?id="+id+"'>Download</a>"+
+							"<a href='/#/msp-team'>cancel</a>"+
+							"<a href='/uploadReport?id="+id+"'>upload</a>";
+				$('#repo').html(repo_list);
+				setTimeout(function(){
+					$('#repo').html(repo_list);	
+					$('#showDetails').html(count+"</br>"+list);
+				},1000);
+				//console.log(count,list,repo_list);
 
 		},
 		error : function(){

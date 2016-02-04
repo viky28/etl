@@ -3,14 +3,18 @@ var fs = require('fs');
 var path = require('path');
 var _ = require("underscore");
 var mime = require("mime");
+var json2xls = require('json2xls');
+var unzip = require("unzip");
+var rmdir = require( 'rmdir' );
 
 var database = require("./usersDatabase");
 var credential_data = require("./public/loginDetail.json");
 var catdatadetail=require('./etl_script/catdatadetail.json');
 var datalookup=require('./etl_script/datalookup.json');
+var etl_helper = require('./etl_script/etl_helper')
 
-
-var uploadFilePath = "/public/uploads";
+var uploadFilePath = "/public/uploads/";
+var downloadFilePath = "/public/downloads";
 
 var helper = {};
 helper.getDate = function(){
@@ -21,10 +25,21 @@ helper.getDate = function(){
 helper.deleteFile = function(file_id,next){
 	
 	database.getFile(file_id,function(err,result){
-		var file = __dirname + result.path+'/'+result.file;
-		database.deleteRecords(req.query.id,function(err,result){
-			fs.unlinkSync(filePath);
-			next();
+		if(!result) {
+			debug("deletion error", err,result);
+			next("fail to delete the file")
+		}
+		// var filePath = __dirname + result.path+'/'+result.file;
+		var folder=result.path.split("/")[3];
+		console.log("folder is",folder)
+		rmdir( __dirname+"/public/uploads/"+folder , function ( err, dirs, files ){
+		  console.log( dirs );
+		  console.log( files );
+		  console.log( 'all files are removed' );
+		});
+		database.deleteRecords(file_id,function(err,result1){
+			// fs.unlinkSync(filePath);
+			next("successfully deleted");
 		});	
 	});
 }
@@ -36,14 +51,34 @@ helper.saveFile = function(req,file,cb,next){
 	var filename = tmp+ '_'+helper.getDate()+fileextention;
   	var channel=req.body.channel;
   	var catagory=req.body.cat;
-
-	var data = {type:req.session.user.type,file:filename,path:uploadFilePath,uploaded_date:new Date(),user:req.session.user.userid,channel:channel,catagory:catagory,status:"pending"};
+  	var id = null;
+	var data = {type:req.session.user.type,file:filename,path:tmp,uploaded_date:new Date(),user:req.session.user.userid,channel:channel,catagory:catagory,status:"pending"};
   	database.insertData(data,function(err,result){
-  		console.log(err);
-  	});
+	 	next(filename,function(){
+	 		helper.unzipFile(req,result.ops[0]._id);
+	 	});
+	});
+}
 
-  	next(filename);
-
+helper.unzipFile = function(req,file_id){
+	if(!file_id){
+		console.log("file id not found");
+	}
+	// console.log("filename",req.file)
+	var filepath = req.file.destination+"/"+req.file.filename;
+	var fileextention = path.extname(req.file.originalname);
+	var tmp = req.file.filename.split(fileextention)[0];
+	// console.log("tmp file",tmp);
+	fs.createReadStream(filepath).pipe(unzip.Extract({ path: 'public/uploads/'+tmp }));
+	fs.unlinkSync(filepath);
+	database.getFile(file_id,function(err,result){
+		var path=result.path;
+		path={$set:{path:uploadFilePath+tmp+'/'+path}};
+		database.updateRecord(file_id,path,function(){
+			
+		});
+		
+	});
 }
 
 
@@ -63,11 +98,14 @@ helper.getUploadFile = function(postjson,next){
 }
 
 
-helper.getRepot = function(data,next){
-	_.each(data,function(item,key){
-		data[key] = JSON.stringify(item);
+helper.getReport = function(id,next){
+	database.getFile(id,function(err,result){
+		var data = result.result;
+		_.each(data,function(item,key){
+			data[key] = JSON.stringify(item);
+		});
+		next(data);	
 	});
-	next(data);
 }
 
 helper.downloadFile = function(file_id,next){
@@ -84,23 +122,58 @@ helper.getTreeData = function(next){
 	treeData(catdatadetail,next);
 }
 
-helper.generateReport = function(id,next){
+helper.generateReport = function(id,type,next){
 	database.getFile(id ,function(err,result){
 		if (!result) {
-			next(result);	
+			console.log("Result not fount");
+			next(result);
+			return;	
 		};
 		
-		var file = __dirname + result.path+'/'+result.file;		
-		etl_helper.start_process(result.catagory,file,true,function(response){
-			checkListing(response,next);
+		if (type && result.result) {
+			console.log("Result found");
+			next(result.result);
+			return;
+		}
+		var file = __dirname + result.path;
+		
+		var allFile;
+		fs.readdir(file, function(err, files) {
+    		if (err) return;
+    			files.forEach(function(f) {
+    				if(f.indexOf(".csv")> -1){
+    					console.log('Files: ==' + f);
+    					allFile = f;
+    				//return f;
+    				}
+    			});
+
+    		etl_helper.start_process(result.catagory,file,file+'/'+allFile,result.channel,type,function(response){
+				console.log("File Validated");
+				checkListing(response,type,function(error_result){
+					helper.saveRecord(id,error_result);
+					next(error_result);
+				});
+			});
 		});
+		console.log("files are",allFile)
+		// var file = __dirname + result.path+result.file;	
+		// console.log("file is",result.path+result.file);
+		
 		
 	});
 }
 
-helper.updateRecord = function(id,next){
-	database.updateRecord(req.query.id,function(err,result){
+helper.updateRecord = function(id,status,next){
+	var upt = {$set:{status:status}}
+	database.updateRecord(id,upt,function(err,result){
 		next();
+	});
+}
+helper.saveRecord = function(id,result){
+	var upt = {$set:{result:result}}
+	database.updateRecord(id,upt,function(err,result){
+		console.log("Record saved.");
 	});
 }
 module.exports=helper;
@@ -132,7 +205,8 @@ function treeData(catdatadetail,next){
 	});
 	next(data);
 }
-function checkListing(data,next) {
+
+function checkListing(data,type,next) {
 	var error = {};
     _.each(data["Error"],function(value){
 
@@ -160,7 +234,10 @@ function checkListing(data,next) {
     });
 	error["totalCount"] = data["errorCount"]+data["successCount"];
 	error["errorCount"] = data["errorCount"];
-	next(error);
+	if(data["Response"]){
+		error["otherError"] = data["Response"];
+	}	
+	next(error);	
 }
 
 

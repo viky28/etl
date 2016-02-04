@@ -71,13 +71,13 @@ database.deleteRecords = function(id,next){
 
 }
 
-database.updateRecord=function(id,next){
+database.updateRecord=function(id,upt,next){
 	database.getdb(function(err,db){
 		if(err){
 			console.log("not updated");
 			return;
 		}
-		db.etl.updateOne({_id:ObjectId(id)},{ $set: { "status": "processing" } },function(err,res){
+		db.etl.updateOne({_id:ObjectId(id)},upt,function(err,res){
 			if(err)
 				next(false);
 			else

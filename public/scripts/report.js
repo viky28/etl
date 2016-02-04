@@ -29,10 +29,12 @@ function showListing(id){
 				}
 				list+="</tbody>";
 				
-				list+="</table>";
+				list+="</table class='table'>";
 				$('#showDetails').html(list);
 				$('#total').html("Total : "+data["totalCount"]);
 				$('#error').html("Errors : "+data["errorCount"]);
+				
+
 
 		},
 		error : function(){
@@ -40,18 +42,3 @@ function showListing(id){
 		}
 	});
 }
-
-// function downReport(){
-// 	$.ajax({
-// 		url : '/downloadReport',
-// 		type : 'GET',
-// 		dataType : 'text',
-// 		contentType: "application/json; charset=utf-8",
-// 		success : function(data){
-// 			console.log("successfully downloaded")
-// 		},
-// 		error : function(){
-// 			console.log("error");
-// 		}
-// 	});
-// }

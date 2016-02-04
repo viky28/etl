@@ -41,8 +41,11 @@ var storage = multer.diskStorage({
   	cb(null,'.'+uploadFilePath)
   },
   filename: function (req, file, cb) {
-  	app_helper.saveFile(req,file,cb,function(name){
-  		cb(null, name)
+  	app_helper.saveFile(req,file,cb,function(name,next){
+  		cb(null, name);
+  		setTimeout(function(){ 
+  			next(); 
+  		}, 1000);
   	});
   }
 });
@@ -94,8 +97,7 @@ app.get('/logout', function(req, res){
 });
 
 app.get('/downloadReport',function(req,res) {
-
-	app_helper.getRepot(error,function(result){
+	app_helper.getReport(req.query.id,function(result){
 		res.xls('Report.xlsx', result);	
 	});
 	
@@ -130,28 +132,48 @@ app.get('/treeview', function(req,res){
 });
 
 app.post('/showReport',function(req,res){
-	app_helper.generateReport(req.body.id,function(result){
-		res.json(result);
+	var id = req.query.id || req.body.id;
+	if(!id){
+		console.log("id not found");
+		res.json({"msg":"Please provide valid id:"+id});
+	}
+	app_helper.updateRecord(id,"processing",function(){
+		app_helper.generateReport(id,true,function(result){
+			res.json(result);
+		});	
 	});
+	
 });
 
 app.delete('/deleteRecord',function(req,res){
+	if(!req.query.id){
+		console.log("id not found");
+		res.send("please provide the id");
+	}
+	app_helper.deleteFile(req.query.id,function(result){
 
-	database.deleteRecords(req.query.id,function(err,result){
-		res.send('success');
+		res.send(result);	
 	});
-		
-app_helper.deleteFile(req.query.id,function(){
-		res.send('success');	
-	});
-	
-
 });
 
-app.put('/updateRecord',function(req,res){
-	app_helper.updateRecord(req.query.id,function(){
-		res.send("success");
+
+app.get('/uploadReport',function(req,res){
+	var id = req.query.id || req.body.id;
+	console.log(id)
+	if(!id){
+		console.log("id not found");
+		res.send("Please provide the id");
+	}
+	app_helper.generateReport(id,false,function(result){
+		app_helper.updateRecord(id,"done",function(){
+			console.log("done",id);
+		});
+	});
+	console.log("uploading file")
+	app_helper.updateRecord(id,"uploading",function(){
+		res.redirect("/");
 	})
+	
 });	
 
 app.get("*",function(req,res){
@@ -169,37 +191,3 @@ function getdataLookUp(data){
 	});
 	return list;
 }
-
-var error={};
-function checkListing(res,data) {
-	//console.log(data);
-	error = {};
-	_.each(data["Error"],function(value){
-
-		var tmp = JSON.parse(value.errorlist);
-		_.each(tmp,function(val,key){
-
-			if (!error[val.field]) {
-				error[val.field] = new Array();
-			};
-
-			var fl = _.where(error[val.field],{msg:val.errormessage,"value":val.value});
-			if (fl.length == 0) {
-				error[val.field].push({count:1,msg:val.errormessage,"value":val.value || "not provided"});	
-			}else{
-				//console.log("\n");
-				_.each(error[val.field],function(item){
-					//console.log(item.msg,fl);
-					if (item.msg === fl[0].msg && item.value === fl[0].value) {
-						item.count++;
-					};
-				});
-			};
-
-		});
-	});
-	error["totalCount"] = data["errorCount"]+data["successCount"];
-	error["errorCount"] = data["errorCount"];
-	res.json(error);
-}
-

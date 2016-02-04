@@ -20,14 +20,14 @@ function loadUploadedData(id,type){
 		data:JSON.stringify({type:type}),
 		success : function(data){
 			var list = "";
-			var alist = ["type","_id","path","user","channel","catagory"];
-			var blist = ["type","_id","path","user","status","catagory"];
+			var alist = ["type","_id","path","user","channel","catagory","result"];
+			var blist = ["type","_id","path","user","catagory","result"];
 			
 			for(var i=0;i<data.length;i++){
 				list+="<li class='list-group-item'>";
-				
+				var status=data[i].status;
 				$.each(data[i],function(key,value){
-					var dat = new Date(value) == "Invalid Date" ? value : new Date(value);
+					var dat = new Date(value) == "Invalid Date" ? value : new Date(value).toLocaleString();
 					if(alist.indexOf(key) == -1 && id==='list'){
 						list+="<span id='keys'>"+key+":-"+"</span><span>"+dat+","+"</span>&nbsp;";
 					} else if(blist.indexOf(key)== -1 && id==='wrapper'){
@@ -36,9 +36,17 @@ function loadUploadedData(id,type){
 				});
 				
 				if(id==='wrapper'){
-					list+="|&nbsp;<a href='/#/report?id="+data[i]["_id"]+"'>Report</a></li>";
+					if(status !="uploading" && status !="done"){
+						list+="|&nbsp;<a href='/#/report?id="+data[i]["_id"]+"'>Report</a></li>";
+					}
+					
 				}else if(id==='list'){
-					list+="|&nbsp;<a href='#' onclick='deleteRecord(\""+data[i]["_id"]+"\")'>Delete</a></li>";
+					if (status == "done") {
+						list+="|&nbsp;<a href='/downloadReport?id="+data[i]["_id"]+"'>DownLoad Report</a>|&nbsp;<a href='#' onclick='deleteRecord(\""+data[i]["_id"]+"\")'>Delete</a></li>";
+					}else if (status !== "uploading" && status !== "processing") {
+						list+="|&nbsp;<a href='#' onclick='deleteRecord(\""+data[i]["_id"]+"\")'>Delete</a></li>";
+					};
+					
 				}
 			};
 
@@ -116,8 +124,9 @@ function changeUrl(url){
 }
 //load page
 function loadPage(page,next){
-	$("#content").load(page,function(){
-		if (next)
+	$("#content").load(page,function(response, status, xhr){
+		//console.log(response, status, xhr);
+		if (xhr.status == 200 && next)
 			next();
 	});
 }

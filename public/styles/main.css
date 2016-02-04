@@ -285,16 +285,7 @@ a{
     margin-left: 600px;
     background-color: #31708f;
 }
-<<<<<<< HEAD
-#showDetails{
-    length:auto;
-    overflow-y: scroll;
-    height:500px;
-    font-size: 13px;
-}
-=======
 
->>>>>>> a9bb44aab28a55b25e5344441a72dcb34ca04f48
 .repo{
     background-color: rgba(127, 122, 122, 0.55);
     font-size: 18px;
